@@ -8,8 +8,10 @@ import Qt.labs.folderlistmodel 1.0
 Pane {
     id: playlists
     bottomPadding: 0
+    anchors.top: stackView.top
     anchors.left: stackView.left
     anchors.right: stackView.right
+    anchors.bottom: stackView.bottom
 
     ListModel {
         id: libraryModel

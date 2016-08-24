@@ -1,4 +1,4 @@
-QT       += multimedia sql
+QT       += gui multimedia sql
 
 3rdpartyDir  = $$PWD/3rdparty
 
@@ -55,10 +55,30 @@ macx {
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9
 }
 
-SOURCES +=
+SOURCES += \
+    musiclocationsmodel.cpp \
+    musicsearchengine.cpp \
+    filehelper.cpp \
+    cover.cpp \
+    model/genericdao.cpp \
+    model/playlistdao.cpp \
+    model/sqldatabase.cpp \
+    model/trackdao.cpp \
+    settings.cpp \
+    settingsprivate.cpp
 
 HEADERS += \
-    miamcore_global.h
+    miamcore_global.h \
+    musiclocationsmodel.h \
+    musicsearchengine.h \
+    filehelper.h \
+    cover.h \
+    model/genericdao.h \
+    model/playlistdao.h \
+    model/sqldatabase.h \
+    model/trackdao.h \
+    settings.h \
+    settingsprivate.h
 
 RESOURCES +=
 

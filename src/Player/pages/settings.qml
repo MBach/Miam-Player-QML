@@ -5,11 +5,15 @@ import Qt.labs.settings 1.0
 import QtQuick.Controls.Material 2.0
 import QtQuick.Dialogs 1.2
 
+import org.miamplayer.qml 1.0
+
 Pane {
     id: settingsPane
     //anchors.fill: parent
+    anchors.top: stackView.top
     anchors.left: stackView.left
     anchors.right: stackView.right
+    anchors.bottom: stackView.bottom
 
     ButtonGroup {
         id: styleBG
@@ -19,12 +23,14 @@ Pane {
         id: modeBG
     }
 
+    MusicLocationsModel {
+        id: musicLocations
+    }
+
     TabBar {
         id: settingsTabBar
         z: 2
         Layout.fillWidth: true
-
-        currentIndex: stackLayoutSettings.currentIndex
 
         anchors.left: parent.left
         anchors.right: parent.right
@@ -49,12 +55,75 @@ Pane {
         title: "Please choose a file"
         folder: shortcuts.music
         selectFolder: true
-        onAccepted: {
-            console.log("You chose: " + fileDialog.fileUrl)
-            appSettings.musicLocations.push(fileDialog.fileUrl)
-        }
+        onAccepted: musicLocations.addFolder(fileDialog.fileUrl)
         onRejected: {
             console.log("Canceled")
+        }
+    }
+
+    Popup {
+        id: removeFolder
+        x: (window.width - width) / 2 - menuPane.width
+        y: (window.height - height) / 2 - window.header.height
+        width: Math.min(500, window.width / 2)
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+        focus: true
+        height: 200
+        modal: true
+        property string folderToRemove
+
+        background: Rectangle {
+            implicitWidth: parent.width
+            implicitHeight: parent.height
+            color: appSettings.menuPaneColor
+
+            ColumnLayout {
+                anchors.fill: parent
+                Rectangle {
+                    anchors.top: parent.top
+                    id: header
+                    height: 30
+                    width: removeFolder.width
+                    Layout.fillWidth: true
+                    color: Material.primary
+                    Label {
+                        anchors.fill: parent
+                        text: qsTr("Remove this folder?")
+                        verticalAlignment: Text.AlignVCenter
+                        leftPadding: 10
+                    }
+                }
+                Label {
+                    Layout.fillWidth: true
+                    text: qsTr("Would like to remove this folder from Miam-Player-QML?")
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 20
+                    anchors.rightMargin: 20
+                    Button {
+                        id: cancelRemove
+                        anchors.right: parent.right
+                        text: qsTr("Cancel")
+                        onClicked: removeFolder.close()
+                    }
+                    Button {
+                        id: acceptRemove
+                        anchors.rightMargin: 30
+                        anchors.right: cancelRemove.left
+                        text: qsTr("Remove")
+                        onClicked: {
+                            musicLocations.removeFolder(removeFolder.folderToRemove)
+                            removeFolder.close()
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -79,38 +148,113 @@ Pane {
             Flow {
                 anchors.left: parent.left
                 anchors.right: parent.right
-                Button {
+                Layout.fillWidth: true
+                spacing: 10
+
+                flow: Flow.LeftToRight
+                Label {
                     id: addMusicLocation
                     text: "+"
                     font.pointSize: 22
+                    width: 200
+                    height: 75
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
 
                     background: Rectangle {
-                        implicitWidth: 150
-                        implicitHeight: 75
                         opacity: 0.3
                         color: appSettings.menuPaneColor
                         border.color: addMusicLocation.down ? Material.accent : Material.foreground
                         border.width: 2
+
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onEntered: {
+                                parent.opacity = 1.0
+                                parent.border.color = Material.accent
+                            }
+                            onExited: {
+                                parent.opacity = 0.3
+                                parent.border.color = Material.foreground
+                            }
+                            onClicked: {
+                                fileDialog.open()
+                            }
+                        }
                     }
-                    onClicked: {
-                        fileDialog.open()
-                    }
+
                 }
 
                 Repeater {
-                    model: appSettings.musicLocations.size
-                    Rectangle {
-                        width: 150
+                    model: musicLocations
+                    Label {
+                        width: 300
                         height: 75
-                        color: appSettings.menuPaneColor
-                        border.color: Material.foreground
-                        border.width: 2
-                        Label {
-                            text: appSettings.musicLocations[index]
-                            anchors.fill: parent
+                        text: folder
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignHCenter
+                        background: Rectangle {
+
+                            opacity: 0.3
+                            color: appSettings.menuPaneColor
+                            border.color: Material.foreground
+                            border.width: 2
+
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onEntered: {
+                                    parent.opacity = 1.0
+                                    parent.border.color = Material.accent
+                                }
+                                onExited: {
+                                    parent.opacity = 0.3
+                                    parent.border.color = Material.foreground
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            width: 20
+                            height: 20
+                            opacity: 0.3
+                            anchors.rightMargin: 10
+                            anchors.right: parent.right
+                            anchors.topMargin: 10
+                            anchors.top: parent.top
+                            border.color: Material.foreground
+                            color: appSettings.menuPaneColor
+                            border.width: 2
+
+                            Label {
+                                text: "+"
+                                rotation: -45
+                                anchors.fill: parent
+                                verticalAlignment: Text.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onEntered: {
+                                    parent.opacity = 1.0
+                                    parent.border.color = Material.accent
+                                }
+                                onExited: {
+                                    parent.opacity = 0.3
+                                    parent.border.color = Material.foreground
+                                }
+                                onClicked: {
+                                    removeFolder.folderToRemove = folder
+                                    removeFolder.open()
+                                }
+                            }
                         }
                     }
                 }
+
             }
         }
 
@@ -145,6 +289,7 @@ Pane {
                     }
                 }
                 RadioButton {
+                    enabled: false
                     checked: appSettings.style === "Universal"
                     text: "Universal"
                     ButtonGroup.group: styleBG
@@ -266,9 +411,5 @@ Pane {
                 }
             }
         }
-    }
-
-    Component.onCompleted: {
-        console.log(appSettings.musicLocations)
     }
 }

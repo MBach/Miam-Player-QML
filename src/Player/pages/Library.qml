@@ -14,11 +14,16 @@ Page {
         id: rowLayout
         anchors.fill: parent
 
-        Rectangle {
+        /*Rectangle {
             color: appSettings.menuPaneColor
             anchors.fill: parent
             anchors.rightMargin: 20
-        }
+            Rectangle {
+                width: 200
+                height: 200
+                color: Material.accent
+            }
+        }*/
         Rectangle {
             color: appSettings.menuPaneColor
             anchors.top: parent.top

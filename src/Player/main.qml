@@ -5,6 +5,8 @@ import QtQuick.Controls.Material 2.0
 import QtQuick.Window 2.2
 import Qt.labs.settings 1.0
 
+import org.miamplayer.qml 1.0
+
 ApplicationWindow {
     id: window
     visible: true
@@ -34,14 +36,98 @@ ApplicationWindow {
         property string accent: Material.Purple
         property string style: "Material"
         property string menuPaneColor: "#171717"
-
-        property variant musicLocations: []
     }
 
     Material.background: appSettings.background
     Material.theme: appSettings.theme
     Material.primary: appSettings.primary
     Material.accent: appSettings.accent
+
+    color: appSettings.background
+
+    Popup {
+        id: noMusicPopup
+        x: window.width - 300
+        y: 50
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+        focus: true
+        width: 250
+        height: 100
+        property string folderToRemove
+
+        background: Rectangle {
+            implicitWidth: parent.width
+            implicitHeight: parent.height
+            color: appSettings.menuPaneColor
+            border.color: Material.accent
+
+            ColumnLayout {
+                anchors.fill: parent
+                Rectangle {
+                    width: 20
+                    height: 20
+                    opacity: 0.3
+                    anchors.rightMargin: 2
+                    anchors.right: parent.right
+                    anchors.topMargin: 2
+                    anchors.top: parent.top
+                    border.color: Material.foreground
+                    color: appSettings.menuPaneColor
+                    border.width: 1
+
+                    Label {
+                        text: "+"
+                        rotation: -45
+                        anchors.fill: parent
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignHCenter
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onEntered: {
+                            parent.opacity = 1.0
+                            parent.border.color = Material.accent
+                        }
+                        onExited: {
+                            parent.opacity = 0.3
+                            parent.border.color = Material.foreground
+                        }
+                        onClicked: {
+                            noMusicPopup.close()
+                        }
+                    }
+                }
+                Label {
+                    Layout.fillWidth: true
+                    text: qsTr("No music was found in your Library")
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                }
+                Button {
+                    id: acceptRemove
+                    anchors.alignWhenCentered: true
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: qsTr("Open Settings")
+                    onClicked: {
+                        noMusicPopup.close()
+                        menuPane.loadPage("settings")
+                    }
+                }
+            }
+        }
+    }
+
+    MusicLocationsModel {
+        id: musicLocations
+        Component.onCompleted: {
+            if (isEmpty()) {
+                console.log("display popup")
+                noMusicPopup.open()
+            }
+        }
+    }
 
     header: ToolBar {
         RowLayout {
@@ -131,9 +217,18 @@ ApplicationWindow {
             }
 
 
-            function loadPage(title, pageName) {
-                titleLabel.text = title
-                stackView.replace(pageName)
+            function loadPage(title) {
+                var pages = [
+                            {id: "settings", tr: qsTr("Settings"), url: "qrc:/pages/settings.qml"},
+                            {id: "allMusic", tr: qsTr("All music"), url: "qrc:/pages/all-music.qml"},
+                            {id: "playlists", tr: qsTr("Playlists"), url: "qrc:/pages/playlists.qml"}
+                        ]
+                for (var i = 0; i < pages.length ; i++) {
+                    if (pages[i].id === title) {
+                        titleLabel.text = pages[i].tr
+                        stackView.replace(pages[i].url)
+                    }
+                }
             }
 
             ColumnLayout {
@@ -212,7 +307,7 @@ ApplicationWindow {
                         sourceSize.width: 20
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: menuPane.loadPage(menuPlaylistsLabel.text, "qrc:/pages/playlists.qml")
+                            onClicked: menuPane.loadPage("playlists")
                         }
                     }
                     Label {
@@ -226,7 +321,7 @@ ApplicationWindow {
                         font.pointSize: 12
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: menuPane.loadPage(parent.text, "qrc:/pages/playlists.qml")
+                            onClicked: menuPane.loadPage("playlists")
                         }
                         visible: menuPane.state == ""
                     }
@@ -243,7 +338,7 @@ ApplicationWindow {
                         sourceSize.width: 20
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: menuPane.loadPage(allMusicLabel.text, "qrc:/pages/all-music.qml")
+                            onClicked: menuPane.loadPage("allMusic")
                         }
                     }
                     Label {
@@ -257,7 +352,7 @@ ApplicationWindow {
                         font.pointSize: 12
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: menuPane.loadPage(parent.text, "qrc:/pages/all-music.qml")
+                            onClicked: menuPane.loadPage("allMusic")
                         }
                         visible: menuPane.state == ""
                     }
@@ -274,7 +369,7 @@ ApplicationWindow {
                         sourceSize.width: 20
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: menuPane.loadPage(settingsLabel.text, "qrc:/pages/settings.qml")
+                            onClicked: menuPane.loadPage("settings")
                         }
                     }
                     Label {
@@ -288,7 +383,7 @@ ApplicationWindow {
                         font.pointSize: 12
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: menuPane.loadPage(parent.text, "qrc:/pages/settings.qml")
+                            onClicked: menuPane.loadPage("settings")
                         }
                         visible: menuPane.state == ""
                     }
@@ -310,11 +405,11 @@ ApplicationWindow {
                     easing.type: Easing.OutCirc
                 }
             }
-            replaceExit: Transition { }
+            replaceExit: Transition {}
         }
     }
 
     Component.onCompleted: {
-        menuPane.loadPage(qsTr("Playlists"), "qrc:/pages/playlists.qml")
+        menuPane.loadPage("playlists")
     }
 }
