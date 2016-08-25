@@ -8,6 +8,7 @@
 #define SOFT "MiamPlayerQML"
 #define VERSION "0.1"
 
+#include <library/libraryitemmodel.h>
 #include <musiclocationsmodel.h>
 
 int main(int argc, char *argv[])
@@ -19,6 +20,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<MusicLocationsModel>("org.miamplayer.qml", 1, 0, "MusicLocationsModel");
+    qmlRegisterType<LibraryItemModel>("org.miamplayer.qml", 1, 0, "LibraryItemModel");
 
     QQmlApplicationEngine engine;
 

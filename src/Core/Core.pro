@@ -65,7 +65,16 @@ SOURCES += \
     model/sqldatabase.cpp \
     model/trackdao.cpp \
     settings.cpp \
-    settingsprivate.cpp
+    settingsprivate.cpp \
+    library/libraryfilterproxymodel.cpp \
+    library/libraryitemmodel.cpp \
+    library/miamitemmodel.cpp \
+    library/miamsortfilterproxymodel.cpp \
+    library/separatoritem.cpp \
+    library/trackitem.cpp \
+    library/albumitem.cpp \
+    library/artistitem.cpp \
+    library/yearitem.cpp
 
 HEADERS += \
     miamcore_global.h \
@@ -78,7 +87,16 @@ HEADERS += \
     model/sqldatabase.h \
     model/trackdao.h \
     settings.h \
-    settingsprivate.h
+    settingsprivate.h \
+    library/libraryfilterproxymodel.h \
+    library/libraryitemmodel.h \
+    library/miamitemmodel.h \
+    library/miamsortfilterproxymodel.h \
+    library/separatoritem.h \
+    library/trackitem.h \
+    library/albumitem.h \
+    library/artistitem.h \
+    library/yearitem.h
 
 RESOURCES +=
 

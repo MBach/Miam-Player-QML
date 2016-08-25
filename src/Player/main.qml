@@ -119,13 +119,19 @@ ApplicationWindow {
         }
     }
 
+    /*Loader {
+        id: libraryModel
+    }*/
+
     MusicLocationsModel {
         id: musicLocations
         Component.onCompleted: {
             if (isEmpty()) {
                 console.log("display popup")
                 noMusicPopup.open()
-            }
+            } /*else {
+                libraryModel.source = "qrc:/pages/LibraryModel.qml"
+            }*/
         }
     }
 
