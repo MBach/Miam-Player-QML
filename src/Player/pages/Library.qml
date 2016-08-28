@@ -43,7 +43,15 @@ Page {
                     implicitHeight: height
                     implicitWidth: width
                     color: Material.background
+                    Image {
+                        id: disc
+                        sourceSize.height: 20
+                        sourceSize.width: 20
+                        source: "qrc:/images/disc.png"
+                        visible: libraryItemModel.data("cover")
+                    }
                     Label {
+                        anchors.left: disc.visible ? disc.right : undefined
                         text: styleData.value
                         color: Material.foreground
                     }

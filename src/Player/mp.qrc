@@ -22,5 +22,6 @@
         <file>images/Material/Light/drawer@2x.png</file>
         <file>images/Material/Light/drawer@3x.png</file>
         <file>images/Material/Light/drawer@4x.png</file>
+        <file>images/disc.png</file>
     </qresource>
 </RCC>
